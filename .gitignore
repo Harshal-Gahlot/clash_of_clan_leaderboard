@@ -1,0 +1,18 @@
+# Root-level ignores
+node_modules/
+.env
+.DS_Store
+
+# Client-side
+/client/node_modules
+/client/.env
+/client/dist
+/client/.next
+/client/.vite
+
+# Server-side
+/server/node_modules
+/server/.env
+
+# Logs
+*.log
