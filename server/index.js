@@ -3,16 +3,21 @@ const express = require('express');
 const axios = require('axios');
 
 const app = express();
-const PORT = 3000; // backend port
+const PORT = 3000;
 
 const token = process.env.CLASH_API;
+
+// DEV: just to copy the ip and make new API key every time ip changes, that's how it works sadly.
+axios.get('https://api64.ipify.org?format=json').then(
+    res => console.log('Your public IP is:', res.data.ip)
+);
 
 app.get('/api/clan-members/:clanTag', async (req, res) => {
     let clanTag = req.params.clanTag; // get the clan tag from the request
     if (clanTag.startsWith('#')) {
         clanTag = encodeURIComponent(clanTag); // encode the clan tag from the request i.e. makes # -> %23
     } else {
-        clanTag = encodeURIComponent(`#${clanTag}`); // if it doesn't start with #, add it and encode
+        clanTag = encodeURIComponent(`#${clanTag}`); 
     }
     try {
         console.log("before try");
