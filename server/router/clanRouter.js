@@ -113,6 +113,23 @@ clanRouter.get("/:clanTag/warlog", parsTagMiddleware, async (req, res) => {
     }
 });
 
+clanRouter.get("/:searchClanName", async (req, res) => {
+    const searchClanName = req.params.searchClanName;
+
+    try {
+        response = await axios.get(`https://api.clashofclans.com/v1/clans?name=${searchClanName}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        const data = response.data;
+        res.json(data);
+
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        res.json(error);
+    } 
+});
 
 
 module.exports = clanRouter; 
