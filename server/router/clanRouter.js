@@ -26,7 +26,7 @@ function parsTagMiddleware(req, res, next) {
 }
 
 clanRouter.get('/clan-members/:clanTag', parsTagMiddleware, async (req, res) => {
-    let clanTag = req.params.clanTag;
+    const clanTag = req.params.clanTag;
 
     try {
         console.log("before try");
@@ -44,9 +44,8 @@ clanRouter.get('/clan-members/:clanTag', parsTagMiddleware, async (req, res) => 
     }
 });
 
-
 clanRouter.get("/:clanTag/currentWar/leaguegroup", parsTagMiddleware, async (req, res) => {
-    let clanTag = req.params.clanTag;
+    const clanTag = req.params.clanTag;
 
     try {
         response = await axios.get(`https://api.clashofclans.com/v1/clans/${clanTag}/currentwar/leaguegroup`, {
@@ -64,7 +63,7 @@ clanRouter.get("/:clanTag/currentWar/leaguegroup", parsTagMiddleware, async (req
 
 // TEST: again when cwl is started.
 clanRouter.get("/clanwarleagues/wars/:warTag", async (req, res) => {
-    let warTag = req.params.warTag;
+    const warTag = req.params.warTag;
 
     try {
         response = await axios.get(`https://api.clashofclans.com/v1/clanwarleagues/wars/${warTag}`, {
@@ -73,6 +72,39 @@ clanRouter.get("/clanwarleagues/wars/:warTag", async (req, res) => {
             }
         });
         const data = response.data;
+        res.json(data);
+
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        res.json(error);
+    }
+});
+
+// NOTE: This endpoint will only work if clan have public war log.
+clanRouter.get("/:clanTag/warlog", parsTagMiddleware, async (req, res) => {
+    const clanTag = req.params.clanTag;
+
+    try {
+        response = await axios.get(`https://api.clashofclans.com/v1/clans/${clanTag}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        const isWarLogPublic = response.data.isWarLogPublic
+        console.log(isWarLogPublic);
+
+        if (!isWarLogPublic) {
+            console.log("Clan war log is private");
+            return res.json({ error: 'Clan war log is private' });
+        }
+
+        response = await axios.get(`https://api.clashofclans.com/v1/clans/${clanTag}/warlog`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }); 
+        data = response.data;
+        console.log("Successfully fetched war log");
         res.json(data);
 
     } catch (error) {
