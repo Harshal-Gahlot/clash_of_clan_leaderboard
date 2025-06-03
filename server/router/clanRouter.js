@@ -44,6 +44,7 @@ clanRouter.get('/clan-members/:clanTag', parsTagMiddleware, async (req, res) => 
     }
 });
 
+
 clanRouter.get("/:clanTag/currentWar/leaguegroup", parsTagMiddleware, async (req, res) => {
     let clanTag = req.params.clanTag;
 
@@ -60,5 +61,26 @@ clanRouter.get("/:clanTag/currentWar/leaguegroup", parsTagMiddleware, async (req
         res.json(error);
     }
 });
+
+// TEST: again when cwl is started.
+clanRouter.get("/clanwarleagues/wars/:warTag", async (req, res) => {
+    let warTag = req.params.warTag;
+
+    try {
+        response = await axios.get(`https://api.clashofclans.com/v1/clanwarleagues/wars/${warTag}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        const data = response.data;
+        res.json(data);
+
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        res.json(error);
+    }
+});
+
+
 
 module.exports = clanRouter; 
