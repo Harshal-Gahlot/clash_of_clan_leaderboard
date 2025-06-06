@@ -8,6 +8,49 @@ clanRouter.use(express.json());
 const token = process.env.CLASH_API;
 // console.log("Token:", token); 
 
+// "rounds": [
+//     {
+//         "warTags": [
+//             "#8L0QY80PR",
+//             "#8L0QY2V0Y",
+//             "#8L0QY9YUV",
+//             "#8L0QY82GV"
+//         ]
+//     },
+//     {
+//         "warTags": [
+//             "#8L0RVQJVC",
+//             "#8L0RVQUP2",
+//             "#8L0RVG0UR",
+//             "#8L0RVQVGY"
+//         ]
+//     },
+//     {
+//         "warTags": [
+//             "#8L0UJVVUV",
+//             "#8L0UC08QQ",
+//             "#8L0UC0JY9",
+//             "#8L0UC09CC"
+//         ]
+//     },
+//     {
+//         "warTags": [
+//             "#8L22LLVLR",
+//             "#8L22LQPRC",
+//             "#8L22LQ0JV",
+//             "#8L22LQ829"
+//         ]
+//     },
+//     {
+//         "warTags": [
+//             "#8L2PPPYQC",
+//             "#8L2PP9LLV",
+//             "#8L2PP9QC9",
+//             "#8L2PP9R2Q"
+//         ]
+//     }
+// ];
+
 function parsTagMiddleware(req, res, next) {
     let Tag = req.params.clanTag; // get the clan tag from the request
     if (!Tag) {
@@ -62,8 +105,9 @@ clanRouter.get("/:clanTag/currentWar/leaguegroup", parsTagMiddleware, async (req
 });
 
 // TEST: again when cwl is started.
-clanRouter.get("/clanwarleagues/wars/:warTag", async (req, res) => {
-    const warTag = req.params.warTag;
+clanRouter.get("/cwl/wars/:warTag", async (req, res) => {
+    let warTag = req.params.warTag;
+    warTag = encodeURIComponent(`#${warTag}`);
 
     try {
         response = await axios.get(`https://api.clashofclans.com/v1/clanwarleagues/wars/${warTag}`, {
@@ -113,6 +157,7 @@ clanRouter.get("/:clanTag/warlog", parsTagMiddleware, async (req, res) => {
     }
 });
 
+// TODO TEST: implement limit to results and test if it reutrn limted items.
 clanRouter.get("/:searchClanName", async (req, res) => {
     const searchClanName = req.params.searchClanName;
 
@@ -130,6 +175,25 @@ clanRouter.get("/:searchClanName", async (req, res) => {
         res.json(error);
     } 
 });
+
+// TEST: ig this endpoint will only work if clan have public war log
+clanRouter.get("/:clanTag/currentWar", parsTagMiddleware, async (req, res) => {
+    const clanTag = req.params.clanTag;
+
+    try {
+        response = await axios.get(`https://api.clashofclans.com/v1/clans/${clanTag}/currentwar/`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        const data = response.data;
+        res.json(data);
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        res.json(error);
+    }
+});
+
 
 
 module.exports = clanRouter; 
