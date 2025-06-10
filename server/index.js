@@ -2,13 +2,15 @@ const express = require('express');
 const axios = require('axios');
 // const cors = require('cors')
 
-const clanRouter = require('./router/clanRouter')
+const clansRouter = require('./router/clansRouter')
+const playersRouter = require('./router/playersRouter')
 
 const app = express();
 const PORT = 3000;    
 // app.use(cors()); 
 
-app.use("/api/clan", clanRouter)
+app.use("/api/clans", clansRouter)
+app.use("/api/players", playersRouter)
 
 // DEV: just to copy the ip and make new API key every time ip changes, that's how it works sadly.
 axios.get('https://api.ipify.org?format=json').then(

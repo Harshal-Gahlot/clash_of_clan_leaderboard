@@ -3,10 +3,9 @@ const axios = require('axios');
 const express = require('express');
 const { Router } = require('express');
 
-const clanRouter = Router();
-clanRouter.use(express.json());
+const clansRouter = Router();
+clansRouter.use(express.json());
 const token = process.env.CLASH_API;
-console.log("Token:", token);
 
 // "rounds": [
 //     {
@@ -51,7 +50,7 @@ console.log("Token:", token);
 //     }
 // ];
 
-function parsTagMiddleware(req, res, next) {
+function parsClanTagMiddleware(req, res, next) {
     let Tag = req.params.clanTag; // get the clan tag from the request
     if (!Tag) {
         return res.status(404).json({ error: 'Clan tag is required' });
@@ -68,7 +67,7 @@ function parsTagMiddleware(req, res, next) {
     next();
 }
 
-clanRouter.get("/:clanTag/currentWar/leaguegroup", parsTagMiddleware, async (req, res) => {
+clansRouter.get("/:clanTag/currentWar/leaguegroup", parsClanTagMiddleware, async (req, res) => {
     const clanTag = req.params.clanTag;
 
     try {
@@ -86,7 +85,7 @@ clanRouter.get("/:clanTag/currentWar/leaguegroup", parsTagMiddleware, async (req
 });
 
 // TEST: again when cwl is started.
-clanRouter.get("/cwl/wars/:warTag", async (req, res) => {
+clansRouter.get("/cwl/wars/:warTag", async (req, res) => {
     let warTag = req.params.warTag;
     warTag = encodeURIComponent(`#${warTag}`);
 
@@ -106,7 +105,7 @@ clanRouter.get("/cwl/wars/:warTag", async (req, res) => {
 });
 
 // NOTE: This endpoint will only work if clan have public war log.
-clanRouter.get("/:clanTag/warlog", parsTagMiddleware, async (req, res) => {
+clansRouter.get("/:clanTag/warlog", parsClanTagMiddleware, async (req, res) => {
     const clanTag = req.params.clanTag;
 
     try {
@@ -139,7 +138,7 @@ clanRouter.get("/:clanTag/warlog", parsTagMiddleware, async (req, res) => {
 });
 
 // TODO TEST: implement limit to results and test if it reutrn limted items.
-clanRouter.get("/search_clan_with_name/:searchClanName/", async (req, res) => {
+clansRouter.get("/search_clan_with_name/:searchClanName/", async (req, res) => {
     const searchClanName = req.params.searchClanName;
     const limit = req.query.limit || 10;
     const after = req.query.after;
@@ -170,7 +169,7 @@ clanRouter.get("/search_clan_with_name/:searchClanName/", async (req, res) => {
 });
 
 // TEST: ig this endpoint will only work if clan have public war log
-clanRouter.get("/:clanTag/currentWar", parsTagMiddleware, async (req, res) => {
+clansRouter.get("/:clanTag/currentWar", parsClanTagMiddleware, async (req, res) => {
     const clanTag = req.params.clanTag;
 
     try {
@@ -187,7 +186,7 @@ clanRouter.get("/:clanTag/currentWar", parsTagMiddleware, async (req, res) => {
     }
 });
 
-clanRouter.get('/search_clan_with_tag/:clanTag', parsTagMiddleware, async (req, res) => {
+clansRouter.get('/search_clan_with_tag/:clanTag', parsClanTagMiddleware, async (req, res) => {
     const clanTag = req.params.clanTag;
 
     try {
@@ -206,7 +205,7 @@ clanRouter.get('/search_clan_with_tag/:clanTag', parsTagMiddleware, async (req, 
     }
 });
 
-clanRouter.get('/:clanTag/clan-members/', parsTagMiddleware, async (req, res) => {
+clansRouter.get('/:clanTag/clan-members/', parsClanTagMiddleware, async (req, res) => {
     const clanTag = req.params.clanTag;
 
     try {
@@ -225,7 +224,7 @@ clanRouter.get('/:clanTag/clan-members/', parsTagMiddleware, async (req, res) =>
     }
 });
 
-clanRouter.get('/:clanTag/capitalraidseasons/', parsTagMiddleware, async (req, res) => {
+clansRouter.get('/:clanTag/capitalraidseasons/', parsClanTagMiddleware, async (req, res) => {
     const clanTag = req.params.clanTag;
     const limit = req.query.limit || 10;
     const after = req.query.after;
@@ -258,4 +257,4 @@ clanRouter.get('/:clanTag/capitalraidseasons/', parsTagMiddleware, async (req, r
     }
 });
 
-module.exports = clanRouter; 
+module.exports = clansRouter; 
