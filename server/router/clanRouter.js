@@ -6,7 +6,7 @@ const { Router } = require('express');
 const clanRouter = Router();
 clanRouter.use(express.json());
 const token = process.env.CLASH_API;
-// console.log("Token:", token); 
+console.log("Token:", token);
 
 // "rounds": [
 //     {
@@ -68,25 +68,6 @@ function parsTagMiddleware(req, res, next) {
     next();
 }
 
-clanRouter.get('/clan-members/:clanTag', parsTagMiddleware, async (req, res) => {
-    const clanTag = req.params.clanTag;
-
-    try {
-        console.log("before try");
-        const response = await axios.get(`https://api.clashofclans.com/v1/clans/${clanTag}/members`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        console.log("after try");
-        const members = response.data.items;
-        res.json(members); // send to frontend
-    } catch (error) {
-        console.error(error.response?.data || error.message);
-        res.json(error);
-    }
-});
-
 clanRouter.get("/:clanTag/currentWar/leaguegroup", parsTagMiddleware, async (req, res) => {
     const clanTag = req.params.clanTag;
 
@@ -134,7 +115,7 @@ clanRouter.get("/:clanTag/warlog", parsTagMiddleware, async (req, res) => {
                 Authorization: `Bearer ${token}`
             }
         });
-        const isWarLogPublic = response.data.isWarLogPublic
+        const isWarLogPublic = response.data.isWarLogPublic;
         console.log(isWarLogPublic);
 
         if (!isWarLogPublic) {
@@ -146,7 +127,7 @@ clanRouter.get("/:clanTag/warlog", parsTagMiddleware, async (req, res) => {
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        }); 
+        });
         data = response.data;
         console.log("Successfully fetched war log");
         res.json(data);
@@ -158,11 +139,23 @@ clanRouter.get("/:clanTag/warlog", parsTagMiddleware, async (req, res) => {
 });
 
 // TODO TEST: implement limit to results and test if it reutrn limted items.
-clanRouter.get("/:searchClanName", async (req, res) => {
+clanRouter.get("/search_clan_with_name/:searchClanName/", async (req, res) => {
     const searchClanName = req.params.searchClanName;
+    const limit = req.query.limit || 10;
+    const after = req.query.after;
+    const before = req.query.before;
 
     try {
-        response = await axios.get(`https://api.clashofclans.com/v1/clans?name=${searchClanName}`, {
+        let link;
+        if (after) {
+            link = `https://api.clashofclans.com/v1/clans?name=${searchClanName}&limit=${limit}&after=${after}`;
+        } else if (before) {
+            link = `https://api.clashofclans.com/v1/clans?name=${searchClanName}&limit=${limit}&before=${before}`;
+        } else {
+            link = `https://api.clashofclans.com/v1/clans?name=${searchClanName}&limit=${limit}`;
+        }
+
+        response = await axios.get(link, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -173,7 +166,7 @@ clanRouter.get("/:searchClanName", async (req, res) => {
     } catch (error) {
         console.error(error.response?.data || error.message);
         res.json(error);
-    } 
+    }
 });
 
 // TEST: ig this endpoint will only work if clan have public war log
@@ -194,6 +187,75 @@ clanRouter.get("/:clanTag/currentWar", parsTagMiddleware, async (req, res) => {
     }
 });
 
+clanRouter.get('/search_clan_with_tag/:clanTag', parsTagMiddleware, async (req, res) => {
+    const clanTag = req.params.clanTag;
 
+    try {
+        console.log("before try");
+        const response = await axios.get(`https://api.clashofclans.com/v1/clans/${clanTag}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log("after try");
+        const data = response.data;
+        res.json(data); // send to frontend
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        res.json(error);
+    }
+});
+
+clanRouter.get('/:clanTag/clan-members/', parsTagMiddleware, async (req, res) => {
+    const clanTag = req.params.clanTag;
+
+    try {
+        console.log("before try");
+        const response = await axios.get(`https://api.clashofclans.com/v1/clans/${clanTag}/members`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        console.log("after try");
+        const members = response.data.items;
+        res.json(members); // send to frontend
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        res.json(error);
+    }
+});
+
+clanRouter.get('/:clanTag/capitalraidseasons/', parsTagMiddleware, async (req, res) => {
+    const clanTag = req.params.clanTag;
+    const limit = req.query.limit || 10;
+    const after = req.query.after;
+    const before = req.query.before;
+
+    try {
+        console.log("before try");
+
+        let link;
+        if (after) {
+            link = `https://api.clashofclans.com/v1/clans/${clanTag}/capitalraidseasons?limit=${limit}&after=${after}`;
+        } else if (before) {
+            link = `https://api.clashofclans.com/v1/clans/${clanTag}/capitalraidseasons?limit=${limit}&before=${before}`;
+        } else {
+            link = `https://api.clashofclans.com/v1/clans/${clanTag}/capitalraidseasons?limit=${limit}`;
+        }
+
+        response = await axios.get(link, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        console.log("after try");
+        const data = response.data;
+        res.json(data); // send to frontend
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        res.json(error);
+    }
+});
 
 module.exports = clanRouter; 

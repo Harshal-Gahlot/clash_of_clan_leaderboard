@@ -11,7 +11,7 @@ const PORT = 3000;
 app.use("/api/clan", clanRouter)
 
 // DEV: just to copy the ip and make new API key every time ip changes, that's how it works sadly.
-axios.get('https://api64.ipify.org?format=json').then(
+axios.get('https://api.ipify.org?format=json').then(
     res => console.log('Your public IP is:', res.data.ip)
 );
 
