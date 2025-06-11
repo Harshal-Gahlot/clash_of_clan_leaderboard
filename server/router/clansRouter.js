@@ -205,7 +205,7 @@ clansRouter.get('/search_clan_with_tag/:clanTag', parsClanTagMiddleware, async (
     }
 });
 
-clansRouter.get('/:clanTag/clan-members/', parsClanTagMiddleware, async (req, res) => {
+clansRouter.get('/:clanTag/clan_members/', parsClanTagMiddleware, async (req, res) => {
     const clanTag = req.params.clanTag;
 
     try {

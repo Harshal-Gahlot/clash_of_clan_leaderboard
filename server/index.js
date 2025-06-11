@@ -1,13 +1,13 @@
 const express = require('express');
 const axios = require('axios');
-// const cors = require('cors')
+const cors = require('cors')
 
 const clansRouter = require('./router/clansRouter')
 const playersRouter = require('./router/playersRouter')
 
 const app = express();
 const PORT = 3000;    
-// app.use(cors()); 
+app.use(cors()); 
 
 app.use("/api/clans", clansRouter)
 app.use("/api/players", playersRouter)
