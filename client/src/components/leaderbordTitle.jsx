@@ -1,7 +1,7 @@
 export default function LeaderboardTitle({ clanData }) {
 
-    const badgeUrl = clanData.badgeUrls.large;
-    const clanName = clanData.name;
+    const badgeUrl = clanData?.badgeUrls?.large;
+    const clanName = clanData?.name;
 
     return (
         <div className='display flex gap-8 items-center'>

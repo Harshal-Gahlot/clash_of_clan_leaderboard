@@ -1,6 +1,7 @@
 import useFetch from "../utility/useFetch";
 export default function LeaderboardList({ clanData }) {
-    const { data: members, loading, error } = useFetch('http://localhost:3000/api/clans/2PJLCURQQ/clan_members/');
+    // const { data: members, loading, error } = useFetch('http://localhost:3000/api/clans/2PJLCURQQ/clan_members/');
+    const { data: members, loading, error } = useFetch('https://clash-of-clan-leaderboard.onrender.com/api/clans/2PJLCURQQ/clan_members/');
 
     if (loading) {
         return <div className='text-white text-2xl'>Loading...</div>;
